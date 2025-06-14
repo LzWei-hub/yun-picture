@@ -10,6 +10,9 @@ import com.ciwei.yunpicture.exception.BusinessException;
 import com.ciwei.yunpicture.exception.ErrorCode;
 import com.ciwei.yunpicture.exception.ThrowUtils;
 import com.ciwei.yunpicture.manager.FileManager;
+import com.ciwei.yunpicture.manager.upload.FilePictureUpload;
+import com.ciwei.yunpicture.manager.upload.PictureUploadTemplate;
+import com.ciwei.yunpicture.manager.upload.UrlPictureUpload;
 import com.ciwei.yunpicture.model.dto.file.UploadPictureResult;
 import com.ciwei.yunpicture.model.dto.picture.PictureQueryRequest;
 import com.ciwei.yunpicture.model.dto.picture.PictureReviewRequest;
@@ -40,16 +43,22 @@ import java.util.stream.Collectors;
  * @createDate 2025-06-11 16:29:37
  */
 @Service
-public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
-        implements PictureService {
+public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> implements PictureService{
 
     @Resource
     private FileManager fileManager;
     @Resource
+    private FilePictureUpload filePictureUpload;
+    @Resource
+    private UrlPictureUpload urlPictureUpload;
+    @Resource
     private UserService userService;
 
     @Override
-    public PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser) {
+    public PictureVO uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
+        if (inputSource == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片为空");
+        }
         ThrowUtils.throwIf(loginUser == null, ErrorCode.NO_AUTH_ERROR);
         // 用于判断是新增还是更新图片
         Long pictureId = null;
@@ -68,7 +77,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 上传图片，得到信息
         // 按照用户 id 划分目录
         String uploadPathPrefix = String.format("public/%s", loginUser.getId());
-        UploadPictureResult uploadPictureResult = fileManager.uploadPicture(multipartFile, uploadPathPrefix);
+        // 根据 inputSource 类型区分上传方式
+        PictureUploadTemplate pictureUploadTemplate = filePictureUpload;
+        if (inputSource instanceof String) {
+            pictureUploadTemplate = urlPictureUpload;
+        }
+        UploadPictureResult uploadPictureResult = pictureUploadTemplate.uploadPicture(inputSource, uploadPathPrefix);
         // 构造要入库的图片信息
         Picture picture = new Picture();
         picture.setUrl(uploadPictureResult.getUrl());

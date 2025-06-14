@@ -10,6 +10,7 @@ import com.ciwei.yunpicture.common.ResultUtils;
 import com.ciwei.yunpicture.exception.BusinessException;
 import com.ciwei.yunpicture.exception.ErrorCode;
 import com.ciwei.yunpicture.exception.ThrowUtils;
+import com.ciwei.yunpicture.manager.upload.UrlPictureUpload;
 import com.ciwei.yunpicture.model.constant.UserConstant;
 import com.ciwei.yunpicture.model.dto.picture.*;
 import com.ciwei.yunpicture.model.entity.Picture;
@@ -53,6 +54,19 @@ public class PictureController {
             HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         PictureVO pictureVO = pictureService.uploadPicture(multipartFile, pictureUploadRequest, loginUser);
+        return ResultUtils.success(pictureVO);
+    }
+
+    /**
+     * 通过 URL 上传图片（可重新上传）
+     */
+    @PostMapping("/upload/url")
+    public BaseResponse<PictureVO> uploadPictureByUrl(
+            @RequestBody PictureUploadRequest pictureUploadRequest,
+            HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        String fileUrl = pictureUploadRequest.getFileUrl();
+        PictureVO pictureVO = pictureService.uploadPicture(fileUrl, pictureUploadRequest, loginUser);
         return ResultUtils.success(pictureVO);
     }
 
