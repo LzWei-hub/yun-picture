@@ -1,5 +1,6 @@
 package com.ciwei.yunpicture.manager;
 
+import cn.hutool.core.io.FileUtil;
 import com.ciwei.yunpicture.config.CosClientConfig;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.*;
@@ -7,7 +8,9 @@ import com.qcloud.cos.model.ciModel.persistence.PicOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.security.auth.login.Configuration;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * @author LzWei
@@ -46,7 +49,16 @@ public class CosManager {
         PicOperations picOperations = new PicOperations();
         // 0 不返回原图信息，1 返回原图信息，默认为 0
         picOperations.setIsPicInfo(1);
+        ArrayList<PicOperations.Rule> rules = new ArrayList<>();
+        // 图片压缩
+        String webpKey = FileUtil.mainName(key) + ".webp";
+        PicOperations.Rule compressRule = new PicOperations.Rule();
+        compressRule.setRule("imageMogr2/format/webp");
+        compressRule.setBucket(cosClientConfig.getBucket());
+        compressRule.setFileId(webpKey);
+        rules.add(compressRule);
         // 构造处理参数
+        picOperations.setRules(rules);
         putObjectRequest.setPicOperations(picOperations);
         return cosClient.putObject(putObjectRequest);
     }
