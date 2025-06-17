@@ -319,14 +319,16 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> impl
 
     @Override
     public void fillReviewParams(Picture picture, User loginUser) {
-        if (userService.isAdmin(loginUser)) {
+        boolean isPrivateOwned = picture.getSpaceId() != null && picture.getUserId().equals(loginUser.getId());
+        // 检查是否为私有空间且属于当前用户，或者用户是管理员
+        if (userService.isAdmin(loginUser) || isPrivateOwned) {
             // 管理员自动过审
             picture.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
             picture.setReviewerId(loginUser.getId());
-            picture.setReviewMessage("管理员自动过审");
+            picture.setReviewMessage(isPrivateOwned ? "私有空间所有者自动过审" : "管理员自动过审");
             picture.setReviewTime(new Date());
         } else {
-            // 非管理员， 创建或编辑都需要改为待审核
+            // 非管理员,或非私有空间所有者的图片需要审核
             picture.setReviewStatus(PictureReviewStatusEnum.REVIEWING.getValue());
         }
     }
