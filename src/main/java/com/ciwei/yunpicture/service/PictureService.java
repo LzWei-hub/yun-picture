@@ -2,6 +2,7 @@ package com.ciwei.yunpicture.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ciwei.yunpicture.api.aliyun.CreateOutPaintingTaskResponse;
 import com.ciwei.yunpicture.model.dto.picture.*;
 import com.ciwei.yunpicture.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -138,4 +139,13 @@ public interface PictureService extends IService<Picture> {
      */
     @Transactional(rollbackFor = Exception.class)
     void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
+
+    /**
+     * 创建图片外绘任务
+     *
+     * @param createPictureOutPaintingTaskRequest
+     * @param loginUser
+     * @return
+     */
+    CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 }
