@@ -59,7 +59,7 @@ public interface UserService extends IService<User> {
      * @param user
      * @return
      */
-    LoginUserVO getLoginUserVo(User user);
+    LoginUserVO getLoginUserVO(User user);
 
     /**
      * 用户注销

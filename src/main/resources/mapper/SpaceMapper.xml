@@ -17,6 +17,7 @@
         <result property="editTime" column="editTime" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
         <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+        <result property="spaceType" column="spaceType" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -24,10 +25,11 @@
         ,spaceName,spaceLevel,
         maxSize,maxCount,totalSize,
         totalCount,userId,createTime,
-        editTime,updateTime,isDelete
+        editTime,updateTime,isDelete,
+        spaceType
     </sql>
 
-    <!-- 获取存储使用量排名前 N 的空间 -->
+<!--    &lt;!&ndash; 获取存储使用量排名前 N 的空间 &ndash;&gt;
     <select id="getTopNSpaceUsage" resultType="com.ciwei.yunpicture.model.entity.Space">
         SELECT id, spaceName, userId, totalSize
         FROM space
@@ -35,9 +37,9 @@
             LIMIT #{topN}
     </select>
 
-    <!-- 删除某用户的所有空间 -->
+    &lt;!&ndash; 删除某用户的所有空间 &ndash;&gt;
     <delete id="deleteByUserId">
         DELETE FROM space WHERE userId = #{userId}
-    </delete>
+    </delete>-->
 
 </mapper>

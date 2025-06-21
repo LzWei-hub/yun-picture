@@ -119,7 +119,7 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser
      * @param picture
      */
-    void checkPictureAuth(User loginUser, Picture picture);
+//    void checkPictureAuth(User loginUser, Picture picture);
 
     /**
      * 根据颜色搜索图片

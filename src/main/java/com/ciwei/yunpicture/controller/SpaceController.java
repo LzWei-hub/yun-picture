@@ -8,6 +8,7 @@ import com.ciwei.yunpicture.common.ResultUtils;
 import com.ciwei.yunpicture.exception.BusinessException;
 import com.ciwei.yunpicture.exception.ErrorCode;
 import com.ciwei.yunpicture.exception.ThrowUtils;
+import com.ciwei.yunpicture.manager.auth.SpaceUserAuthManager;
 import com.ciwei.yunpicture.model.constant.UserConstant;
 import com.ciwei.yunpicture.model.dto.space.*;
 import com.ciwei.yunpicture.model.entity.Space;
@@ -38,6 +39,8 @@ public class SpaceController {
     private SpaceService spaceService;
     @Resource
     private UserService userService;
+    @Resource
+    private SpaceUserAuthManager spaceUserAuthManager;
 
     /**
      * 创建空间
@@ -125,8 +128,12 @@ public class SpaceController {
         // 查询数据库
         Space space = spaceService.getById(id);
         ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR);
+        SpaceVO spaceVO = spaceService.getSpaceVO(space, request);
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
+        spaceVO.setPermissionList(permissionList);
         // 获取封装类
-        return ResultUtils.success(spaceService.getSpaceVO(space, request));
+        return ResultUtils.success(spaceVO);
     }
 
     /**
